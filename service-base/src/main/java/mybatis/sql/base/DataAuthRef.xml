@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yhao.infra.service.base.DataAuthRef">
+    <sql id="tableSql">
+        <if test="orgManager or datas!=null">
+            left join <if test="erpDbName!=null and erpDbName!=''">${erpDbName}.</if>${erpOrgTableName} ref_org on ref_org.fid = ${dataAuthRecord}.${orgColumnName}
+        </if>
+    </sql>
+
+    <sql id="conditionSql">
+        and (
+        <if test="orgManager">
+            ref_org.flong_number like concat(#{personOrgLongNumber},'%')
+        </if>
+        <if test="!orgManager">
+            ${dataAuthRecord}.${managerColumnName} = #{personId}
+        </if>
+        <if test="datas!=null">
+            <foreach open=" or " separator=" or " collection="datas" item="data">
+                ref_org.flong_number like concat(#{data},'%')
+            </foreach>
+        </if>
+        )
+    </sql>
+</mapper>
+
